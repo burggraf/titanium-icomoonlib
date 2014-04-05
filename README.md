@@ -5,8 +5,8 @@
 ### setup
 1. create a font using the IcoMoon App located at http://icomoon.io
 2. download your font
-3. copy your <fontname>.ttf file to /app/assets/fonts
-4. copy your selection.json file to /app/assets/fontmaps and name it <fontname>.json
+3. copy your &lt;fontname&gt;.ttf file to /app/assets/fonts
+4. copy your selection.json file to /app/assets/fontmaps and name it &lt;fontname&gt;.json
 5. copy this file (icomoonlib.js) to /app/lib
 6. call getIconXXXXX() functions from your app
 
