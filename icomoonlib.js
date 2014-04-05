@@ -1,29 +1,28 @@
 /* 
- (This library is designed for use with Titanium Alloy)
 
- getIcon - Get an icon from a saved IcoMoon font file as a Titanium Label object
- 
- setup:	
- 1. create a font using the IcoMoon App located at http://icomoon.io
- 2. download your font
- 3. copy your <fontname>.ttf file to /app/assets/fonts
- 4. copy your selection.json file to /app/assets/fontmaps and name it <fontname>.json
- 5. copy this file (icomoonlib.js) to /app/lib
- 5. call getIconXXXXX() from your app
+icomoonlib
 
- usage:	getIcon(fontname, iconname, size, options)
+Titanium Alloy library for IcoMoon fonts
 
- fontname: this is the name of the font file matching <fontname>.ttf and <fontname>.json
- iconname: this is the name of the icon you want to retrieve
- size: the size of the icon you want in dp (it'll be square by default)
- options: an optional object of Ti.UI.Label properties to apply to the resulting object
+setup:
 
- example:
+1. create a font using the IcoMoon App located at http://icomoon.io
+2. download your font
+3. copy your <fontname>.ttf file to /app/assets/fonts
+4. copy your selection.json file to /app/assets/fontmaps and name it <fontname>.json
+5. copy this file (icomoonlib.js) to /app/lib
+6. call getIconXXXXX() functions from your app
 
- var icon = require("icomoonlib"); // this file (icon.js), which should be copied to your /app/lib folder
- var win = Ti.UI.createWindow({});
- var myicon = icon.getIconAsImageView("icomoon","big_red_dog",32,{color:red}); // returns a 32dp x 32dp red dog icon
- win.add(myicon);
+common parameters:
+
+fontname: this is the name of the font file matching <fontname>.ttf and <fontname>.json
+
+iconname: this is the name of the icon you want to retrieve
+
+size: the size of the icon you want in dp (it'll be square by default)
+
+options: an optional object of Titanium.UI.label properties to be applied to the object that is returned
+
  */
 var fontMaps = {};
 
