@@ -27,7 +27,7 @@ Returns a local filename (including complete local path) of a png image file cre
 
 	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
-	var myicon = icon.getIcon("icomoon","big_red_dog",32,{color:"red"});
+	var myicon = icomoonlib.getIcon("icomoon","big_red_dog",32,{color:"red"});
 	console.log("The cached image now resides at: " + myicon);
 	var imageView = Ti.UI.createImageView({image:myicon}); 
 
@@ -36,7 +36,7 @@ Returns a Titanium.UI.Label object.
 
 	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
-	var mylabel = icon.getIconAsLabel("icomoon",
+	var mylabel = icomoonlib.getIconAsLabel("icomoon",
 										"big_red_dog",
 										32,
 										{color:"red",top:"10dp",left:"10dp"});
@@ -47,7 +47,7 @@ Returns a Blob object containing an image.  The image is not cached, so getIcon 
 
 	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
-	var myicon = icon.getIconAsBlob("icomoon","big_red_dog",32,{color:"red"});
+	var myicon = icomoonlib.getIconAsBlob("icomoon","big_red_dog",32,{color:"red"});
 	// myicon now holds a blob containing the image
 	var imageView = Ti.UI.createImageView({image:myicon}); 
 	
@@ -56,7 +56,7 @@ Creates an image file using getIcon(), then creates and returns a Ti.UI.ImageVie
 
 	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
-	var myimageview = icon.getIconAsImageView("icomoon","big_red_dog",32,{color:"red"});
+	var myimageview = icomoonlib.getIconAsImageView("icomoon","big_red_dog",32,{color:"red"});
 	// myimageview is a Ti.UI.ImageView object that can be added to a view or window
 
 ### getFontList(fontname, size, options)
