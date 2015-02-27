@@ -6,12 +6,20 @@ Titanium Alloy library for IcoMoon fonts
 
 setup:
 
-1. create a font using the IcoMoon App located at http://icomoon.io
-2. download your font
-3. copy your <fontname>.ttf file to /app/assets/fonts
-4. copy your selection.json file to /app/assets/fontmaps and name it <fontname>.json
-5. copy this file (icomoonlib.js) to /app/lib
-6. call getIconXXXXX() functions from your app
+* Create a font using the IcoMoon App located at http://icomoon.io
+* Download your font package
+* Copy your &lt;font package&gt;.zip file to project root or configure custom folder in the Alloy Config variable icomoonlib.zipDir
+* Copy this file (icomoonlib.js) to /app/lib
+* Change or add `pre:load` task to the /app/alloy.jmk
+
+Alloy task:
+
+	task("pre:load", function(event, logger) {
+		var path = require('path');
+		var icomoonlib = require(path.join(event.dir.lib, 'icomoonlib.js'));
+		icomoonlib.pre_load(event, logger);
+	}
+	
 
 common parameters:
 
@@ -198,9 +206,72 @@ var getIcon = function(fontname, iconname, size, options) {
 	}
 };
 
+/**
+ * Alloy.jmk task
+ * @param {Object} event
+ * @param {Object} logger
+ */
+function pre_load(event, logger) {
+    var path = require('path'),
+        AdmZip = require('adm-zip'),
+        fs = require('fs');
+
+    var AlloyCFG = require(event.dir.config),
+        zipDir = AlloyCFG.icomoonlib.zipDir;
+    
+    if(zipDir) {
+        var zipDir = path.normalize( zipDir );
+        if(path.resolve( zipDir ) !== zipDir) {
+            zipDir = path.join(event.dir.project, zipDir);
+        }        
+    } else {
+        zipDir = event.dir.project;
+    }             
+        
+    fs.readdirSync(zipDir).forEach(function(fileName) {        
+       endsWith(fileName,'.zip') && scan(path.join(zipDir,fileName));
+    });        
+    
+    function scan(fileName) {
+        zip = new AdmZip(fileName);   
+        var newMetadata = JSON.parse(zip.readAsText(zip.getEntry('selection.json'),'utf8')).preferences.fontPref.metadata,    
+            fontMapPath = path.join(event.dir.assets, 'fontmaps', newMetadata.fontFamily + '.json');                
+    
+        try {
+            var currentMetadata = require(fontMapPath).preferences.fontPref.metadata;
+        } catch(e) {
+            update();
+            return;
+        }
+    
+        if (newMetadata.majorVersion > currentMetadata.majorVersion || (newMetadata.majorVersion == currentMetadata.majorVersion && newMetadata.minorVersion > currentMetadata.minorVersion)) {
+            update();
+        }
+        
+        function update() {
+            logger.info('Install Icomoon font from ' + fileName);
+            zip.extractEntryTo(path.join('fonts', newMetadata.fontFamily + '.ttf'), path.join(event.dir.assets, 'fonts'), false, true);
+            
+            try {
+                fs.unlinkSync(fontMapPath);
+            } catch(e){}
+            zip.extractEntryTo('selection.json', path.join(event.dir.assets, 'fontmaps'), false, true);
+            fs.renameSync(
+                path.join(event.dir.assets, 'fontmaps', 'selection.json'), 
+                fontMapPath
+            );        
+        }
+    }
+    
+    function endsWith(str, suffix) {
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }   
+}
+
 exports.getIcon = getIcon;
 exports.getIconAsLabel = getIconAsLabel;
 exports.getIconAsBlob = getIconAsBlob;
 exports.getIconAsImageView = getIconAsImageView;
 exports.getFontList = getFontList;
 exports.getIconText = getIconText;
+exports.pre_load = pre_load;

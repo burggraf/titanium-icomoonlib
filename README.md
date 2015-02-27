@@ -3,12 +3,24 @@
 ## Titanium Alloy library for IcoMoon fonts
  	
 ### setup
-1. create a font using the IcoMoon App located at http://icomoon.io
-2. download your font
-3. copy your &lt;fontname&gt;.ttf file to /app/assets/fonts
-4. copy your selection.json file to /app/assets/fontmaps and name it &lt;fontname&gt;.json
-5. copy this file (icomoonlib.js) to /app/lib
-6. call getIconXXXXX() functions from your app
+* Create a font using the IcoMoon App located at http://icomoon.io
+* Download your font package
+* Copy your &lt;font package&gt;.zip file to project root or configure custom folder in the Alloy Config variable icomoonlib.zipDir
+* Copy this file (icomoonlib.js) to /app/lib
+* Change or add `pre:load` task to the /app/alloy.jmk
+
+Alloy task:
+
+	task("pre:load", function(event, logger) {
+		var path = require('path');
+		var icomoonlib = require(path.join(event.dir.lib, 'icomoonlib.js'));
+		icomoonlib.pre_load(event, logger);
+	}
+	
+Require library in your code:
+
+	var icomoonlib = require("icomoonlib");
+
 
 ### common parameters:
 	
@@ -25,7 +37,6 @@
 ### getIcon(fontname, iconname, size, options)
 Returns a local filename (including complete local path) of a png image file created to your specifications.  If the file does not exist, it will be created and saved to the Ti.Filesystem.applicationCacheDirectory folder.  If the file already exists in the cache, the complete path and filename will be returned.
 
-	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
 	var myicon = icomoonlib.getIcon("icomoon","big_red_dog",32,{color:"red"});
 	console.log("The cached image now resides at: " + myicon);
@@ -34,7 +45,6 @@ Returns a local filename (including complete local path) of a png image file cre
 ### getIconAsLabel(fontname, iconname, size, options)
 Returns a Titanium.UI.Label object.
 
-	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
 	var mylabel = icomoonlib.getIconAsLabel("icomoon",
 										"big_red_dog",
@@ -45,7 +55,6 @@ Returns a Titanium.UI.Label object.
 ### getIconAsBlob(fontname, iconname, size, options)
 Returns a Blob object containing an image.  The image is not cached, so getIcon is preferred in most cases, since it caches images.
 
-	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
 	var myicon = icomoonlib.getIconAsBlob("icomoon","big_red_dog",32,{color:"red"});
 	// myicon now holds a blob containing the image
@@ -54,7 +63,6 @@ Returns a Blob object containing an image.  The image is not cached, so getIcon 
 ### getIconAsImageView(fontname, iconname, size, options)
 Creates an image file using getIcon(), then creates and returns a Ti.UI.ImageView object containing the cached image.
 
-	var icomoonlib = require("icomoonlib");
 	// create a 32dp x 32dp red dog icon
 	var myimageview = icomoonlib.getIconAsImageView("icomoon","big_red_dog",32,{color:"red"});
 	// myimageview is a Ti.UI.ImageView object that can be added to a view or window
@@ -62,5 +70,9 @@ Creates an image file using getIcon(), then creates and returns a Ti.UI.ImageVie
 ### getFontList(fontname, size, options)
 For debug purposes only.  Opens a modal window showing the list of icons and icon names for the given font.  This is provided only for developers who have misplaced their icon name list and need to quickly find the name of an icon they need.
 
-	var icomoonlib = require("icomoonlib");
 	icomoonlib.getFontList("icomoon",32,{color:"blue");
+	
+### getFontText(fontname, iconname)
+Returns a icon character string
+
+	mylabel.text = icomoonlib.getFontText("icomoon", "big_red_dog")
