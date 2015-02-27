@@ -26,27 +26,30 @@ options: an optional object of Titanium.UI.label properties to be applied to the
  */
 var fontMaps = {};
 
-function initializeFont(fontname) {
-	if ( typeof fontMaps[fontname] == "undefined")
-		fontMaps[fontname] = {};
+function getFont(fontname) {
+	if ( typeof fontMaps[fontname] !== "undefined")
+	   return fontMaps[fontname];
+	   
+	fontMaps[fontname] = {};
+    
 	try {
 		var obj = JSON.parse(Titanium.Filesystem.getFile('fontmaps/' + fontname + '.json').read().text);
 		var fontmap = obj.icons;
 		for (var i = 0; i < fontmap.length; i++) {
-			var font = fontmap[i].properties.name;
-			var code = fontmap[i].properties.code;
-			//console.log("Found: " + fontname + " / " + font + " / " + code);
-			fontMaps[fontname][font] = String.fromCharCode(code);
+			var iconName = fontmap[i].properties.name;
+			var code = fontmap[i].properties.code;			
+			fontMaps[fontname][iconName] = String.fromCharCode(code);
 		}
 	} catch (fontParseError) {
 		console.log("*** There was a font parsing error.  " + "Did you copy your font's selection.json file " + "into the assets folder of your application and name it " + fontname + ".json?");
 		console.log("*** fontParseError: " + fontParseError);
 	}
+	return fontMaps[fontname];
 }
 
+
 var getFontList = function(fontname, size, options) {
-	if ( typeof fontMaps[fontname] == "undefined")
-		initializeFont(fontname);
+	var font = getFont(fontname);
 	if ( typeof size == "undefined")
 		size = 32;
 	var scrollView = Ti.UI.createScrollView({
@@ -57,7 +60,7 @@ var getFontList = function(fontname, size, options) {
 		var iconname = e.source.text;
 		alert("Usage:\n" + "var iconlib = require(\"icomoonlib\");\n" + "var icon = iconlib.getIcon(\"" + fontname + "\", \"" + iconname + "\", 32);\n" + "\n");
 	};
-	for (var iconname in fontMaps[fontname]) {
+	for (var iconname in font) {
 		var label = Ti.UI.createLabel({
 			left : "10dp",
 			height : size + "dp",
@@ -66,7 +69,7 @@ var getFontList = function(fontname, size, options) {
 				fontFamily : fontname,
 				fontSize : size + "dp"
 			},
-			text : fontMaps[fontname][iconname],
+			text : font[iconname],
 			textAlign : Ti.UI.TEXT_ALIGNMENT_CENTER,
 			color : "black"
 		});
@@ -127,8 +130,7 @@ var getFontList = function(fontname, size, options) {
 };
 
 var getIconAsLabel = function(fontname, iconname, size, options) {
-	if ( typeof fontMaps[fontname] == "undefined")
-		initializeFont(fontname);
+	
 	var label = Ti.UI.createLabel({
 		height : size + "dp",
 		width : size + "dp",
@@ -136,7 +138,7 @@ var getIconAsLabel = function(fontname, iconname, size, options) {
 			fontFamily : fontname,
 			fontSize : size + "dp"
 		},
-		text : ( typeof iconname == "string" ? fontMaps[fontname][iconname] : String.fromCharCode(iconname)),
+		text : getIconText(fontname, iconname),
 		textAlign : Ti.UI.TEXT_ALIGNMENT_CENTER,
 		color : "black"
 	});
@@ -146,6 +148,11 @@ var getIconAsLabel = function(fontname, iconname, size, options) {
 		}
 	}
 	return label;
+};
+
+var getIconText = function(fontname, iconname) {    
+    var font = getFont(fontname);
+    return typeof iconname == "string" ? font[iconname] : String.fromCharCode(iconname);  
 };
 
 var getIconAsBlob = function(fontname, iconname, size, options) {
@@ -174,11 +181,9 @@ var getIcon = function(fontname, iconname, size, options) {
 	//console.log("icon filename:" + filename);
 
 	var path = Ti.Filesystem.getFile(Ti.Filesystem.applicationCacheDirectory, filename);
-	if (path.exists()) {
-		//console.log("*** returning cached version");
+	if (path.exists()) {		
 		return path.nativePath;
-	} else {
-		//console.log("*** creating new file: " + path.nativePath);
+	} else {		
 		var blob = getIconAsBlob(fontname, iconname, size, options);
 		console.log(blob.apiName);
 		if (Ti.Android) {
@@ -198,3 +203,4 @@ exports.getIconAsLabel = getIconAsLabel;
 exports.getIconAsBlob = getIconAsBlob;
 exports.getIconAsImageView = getIconAsImageView;
 exports.getFontList = getFontList;
+exports.getIconText = getIconText;
