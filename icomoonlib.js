@@ -206,14 +206,14 @@ var getIcon = function(fontname, iconname, size, options) {
 	}
 };
 
+
 /**
  * Alloy.jmk task
  * @param {Object} event
  * @param {Object} logger
  */
-function pre_load(event, logger) {
-    var path = require('path'),
-        AdmZip = require('adm-zip'),
+function pre_load(event, logger, admzip) {
+    var path = require('path'),        
         fs = require('fs');
 
     var AlloyCFG = require(event.dir.config),
@@ -233,7 +233,7 @@ function pre_load(event, logger) {
     });        
     
     function scan(fileName) {
-        zip = new AdmZip(fileName);   
+        zip = new admzip(fileName);   
         var newMetadata = JSON.parse(zip.readAsText(zip.getEntry('selection.json'),'utf8')).preferences.fontPref.metadata,    
             fontMapPath = path.join(event.dir.assets, 'fontmaps', newMetadata.fontFamily + '.json');                
     

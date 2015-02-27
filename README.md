@@ -8,13 +8,14 @@
 * Copy your &lt;font package&gt;.zip file to project root or configure custom folder in the Alloy Config variable icomoonlib.zipDir
 * Copy this file (icomoonlib.js) to /app/lib
 * Change or add `pre:load` task to the /app/alloy.jmk
+* Install nodejs module `npm install adm-zip -g`
 
 Alloy task:
 
 	task("pre:load", function(event, logger) {
 		var path = require('path');
 		var icomoonlib = require(path.join(event.dir.lib, 'icomoonlib.js'));
-		icomoonlib.pre_load(event, logger);
+		icomoonlib.pre_load(event, logger, require('adm-zip'));
 	}
 	
 Require library in your code:
