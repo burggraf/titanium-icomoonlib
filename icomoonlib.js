@@ -220,8 +220,8 @@ function pre_load(event, logger, admzip) {
         zipDir = AlloyCFG.icomoonlib.zipDir;
     
     if(zipDir) {
-        var zipDir = path.normalize( zipDir );
-        if(path.resolve( zipDir ) !== zipDir) {
+        zipDir = path.normalize(zipDir);
+        if(path.resolve(zipDir) !== zipDir) {
             zipDir = path.join(event.dir.project, zipDir);
         }        
     } else {
