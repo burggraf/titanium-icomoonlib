@@ -3,8 +3,8 @@
 ## Titanium Alloy library for IcoMoon fonts
  	
 ### setup
-* Create a font using the IcoMoon App located at http://icomoon.io
-* Download your font package
+* Create/edit a font using the IcoMoon App located at http://icomoon.io
+* Download your font package (don't forget change font version)
 * Copy your &lt;font package&gt;.zip file to project root or configure custom folder in the Alloy Config variable icomoonlib.zipDir
 * Copy this file (icomoonlib.js) to /app/lib
 * Change or add `pre:load` task to the /app/alloy.jmk
