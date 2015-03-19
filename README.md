@@ -16,7 +16,7 @@ Alloy task:
 		var path = require('path');
 		var icomoonlib = require(path.join(event.dir.lib, 'icomoonlib.js'));
 		icomoonlib.pre_load(event, logger, require('adm-zip'));
-	}
+	});
 	
 Require library in your code:
 
