@@ -1,4 +1,4 @@
-/* 
+/*
 
 icomoonlib
 
@@ -19,7 +19,7 @@ Alloy task:
 		var icomoonlib = require(path.join(event.dir.lib, 'icomoonlib.js'));
 		icomoonlib.pre_load(event, logger);
 	}
-	
+
 
 common parameters:
 
@@ -37,15 +37,15 @@ var fontMaps = {};
 function getFont(fontname) {
 	if ( typeof fontMaps[fontname] !== "undefined")
 	   return fontMaps[fontname];
-	   
+
 	fontMaps[fontname] = {};
-    
+
 	try {
-		var obj = JSON.parse(Titanium.Filesystem.getFile('fontmaps/' + fontname + '.json').read().text);
+		var obj = JSON.parse(Titanium.Filesystem.getFile(Ti.Filesystem.resourcesDirectory + 'fontmaps/' + fontname + '.json').read().text);
 		var fontmap = obj.icons;
 		for (var i = 0; i < fontmap.length; i++) {
 			var iconName = fontmap[i].properties.name;
-			var code = fontmap[i].properties.code;			
+			var code = fontmap[i].properties.code;
 			fontMaps[fontname][iconName] = String.fromCharCode(code);
 		}
 	} catch (fontParseError) {
@@ -138,7 +138,7 @@ var getFontList = function(fontname, size, options) {
 };
 
 var getIconAsLabel = function(fontname, iconname, size, options) {
-	
+
 	var label = Ti.UI.createLabel({
 		height : size + "dp",
 		width : size + "dp",
@@ -158,9 +158,9 @@ var getIconAsLabel = function(fontname, iconname, size, options) {
 	return label;
 };
 
-var getIconText = function(fontname, iconname) {    
+var getIconText = function(fontname, iconname) {
     var font = getFont(fontname);
-    return typeof iconname == "string" ? font[iconname] : String.fromCharCode(iconname);  
+    return typeof iconname == "string" ? font[iconname] : String.fromCharCode(iconname);
 };
 
 var getIconAsBlob = function(fontname, iconname, size, options) {
@@ -189,9 +189,9 @@ var getIcon = function(fontname, iconname, size, options) {
 	//console.log("icon filename:" + filename);
 
 	var path = Ti.Filesystem.getFile(Ti.Filesystem.applicationCacheDirectory, filename);
-	if (path.exists()) {		
+	if (path.exists()) {
 		return path.nativePath;
-	} else {		
+	} else {
 		var blob = getIconAsBlob(fontname, iconname, size, options);
 		console.log(blob.apiName);
 		if (Ti.Android) {
@@ -213,59 +213,59 @@ var getIcon = function(fontname, iconname, size, options) {
  * @param {Object} logger
  */
 function pre_load(event, logger, admzip) {
-    var path = require('path'),        
+    var path = require('path'),
         fs = require('fs');
 
     var AlloyCFG = require(event.dir.config),
         zipDir = AlloyCFG.icomoonlib.zipDir;
-    
+
     if(zipDir) {
         zipDir = path.normalize(zipDir);
         if(path.resolve(zipDir) !== zipDir) {
             zipDir = path.join(event.dir.project, zipDir);
-        }        
+        }
     } else {
         zipDir = event.dir.project;
-    }             
-        
-    fs.readdirSync(zipDir).forEach(function(fileName) {        
+    }
+
+    fs.readdirSync(zipDir).forEach(function(fileName) {
        endsWith(fileName,'.zip') && scan(path.join(zipDir,fileName));
-    });        
-    
+    });
+
     function scan(fileName) {
-        zip = new admzip(fileName);   
-        var newMetadata = JSON.parse(zip.readAsText(zip.getEntry('selection.json'),'utf8')).preferences.fontPref.metadata,    
-            fontMapPath = path.join(event.dir.assets, 'fontmaps', newMetadata.fontFamily + '.json');                
-    
+        zip = new admzip(fileName);
+        var newMetadata = JSON.parse(zip.readAsText(zip.getEntry('selection.json'),'utf8')).preferences.fontPref.metadata,
+            fontMapPath = path.join(event.dir.assets, 'fontmaps', newMetadata.fontFamily + '.json');
+
         try {
             var currentMetadata = require(fontMapPath).preferences.fontPref.metadata;
         } catch(e) {
             update();
             return;
         }
-    
+
         if (newMetadata.majorVersion > currentMetadata.majorVersion || (newMetadata.majorVersion == currentMetadata.majorVersion && newMetadata.minorVersion > currentMetadata.minorVersion)) {
             update();
         }
-        
+
         function update() {
             logger.info('Install Icomoon font from ' + fileName);
             zip.extractEntryTo(path.join('fonts', newMetadata.fontFamily + '.ttf'), path.join(event.dir.assets, 'fonts'), false, true);
-            
+
             try {
                 fs.unlinkSync(fontMapPath);
             } catch(e){}
             zip.extractEntryTo('selection.json', path.join(event.dir.assets, 'fontmaps'), false, true);
             fs.renameSync(
-                path.join(event.dir.assets, 'fontmaps', 'selection.json'), 
+                path.join(event.dir.assets, 'fontmaps', 'selection.json'),
                 fontMapPath
-            );        
+            );
         }
     }
-    
+
     function endsWith(str, suffix) {
         return str.indexOf(suffix, str.length - suffix.length) !== -1;
-    }   
+    }
 }
 
 exports.getIcon = getIcon;
